@@ -25,9 +25,11 @@ enum class Error : uint8_t {
   kTruncateFailed,
 };
 
-/// @brief Cross-platform shared memory wrapper (POSIX shm_open / Win32 CreateFileMapping).
+/// @brief Cross-platform shared memory wrapper
+///        (POSIX shm_open / Win32 CreateFileMapping).
 ///
-/// Extracted from libsharedmemory (github/kyr0), simplified for C++14:
+/// Extracted from libsharedmemory (github/kyr0),
+/// simplified for C++14:
 ///   - No exceptions, error via enum
 ///   - RAII resource management
 ///   - Supports create (producer) and open (consumer) modes
@@ -35,9 +37,12 @@ enum class Error : uint8_t {
 class SharedMemory {
  public:
   /// @param name    Shared memory name (alphanumeric, no leading '/').
-  /// @param size    Size in bytes. For consumer (create=false), pass 0 to auto-detect.
-  /// @param create  true = producer creates; false = consumer opens existing.
-  /// @param persist true = keep shm after destruction; false = unlink on close.
+  /// @param size    Size in bytes. For consumer (create=false),
+  ///                pass 0 to auto-detect.
+  /// @param create  true = producer creates;
+  ///                false = consumer opens existing.
+  /// @param persist true = keep shm after destruction;
+  ///                false = unlink on close.
   SharedMemory(const char* name, std::size_t size, bool create, bool persist = true)
       : size_(size), persist_(persist), create_(create) {
     NormalizeName(name);
@@ -81,17 +86,23 @@ class SharedMemory {
     // Windows: strip leading '/' if present
     const char* src = (name[0] == '/') ? name + 1 : name;
     len = std::strlen(src);
-    if (len > sizeof(name_) - 1) { len = sizeof(name_) - 1; }
+    if (len > sizeof(name_) - 1) {
+      len = sizeof(name_) - 1;
+    }
     std::memcpy(name_, src, len);
     name_[len] = '\0';
 #else
     // POSIX: ensure leading '/'
     if (name[0] == '/') {
-      if (len > sizeof(name_) - 1) { len = sizeof(name_) - 1; }
+      if (len > sizeof(name_) - 1) {
+      len = sizeof(name_) - 1;
+    }
       std::memcpy(name_, name, len);
       name_[len] = '\0';
     } else {
-      if (len > sizeof(name_) - 2) { len = sizeof(name_) - 2; }
+    if (len > sizeof(name_) - 2) {
+      len = sizeof(name_) - 2;
+    }
       name_[0] = '/';
       std::memcpy(name_ + 1, name, len);
       name_[len + 1] = '\0';
@@ -113,13 +124,17 @@ class SharedMemory {
     const DWORD lo = static_cast<DWORD>(size_ & 0xFFFFFFFF);
     handle_ = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr,
                                  PAGE_READWRITE, hi, lo, name_);
-    if (!handle_) { return Error::kCreationFailed; }
+    if (!handle_) {
+      return Error::kCreationFailed;
+    }
     return MapView();
   }
 
   Error WinOpen() noexcept {
     handle_ = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, name_);
-    if (!handle_) { return Error::kOpenFailed; }
+    if (!handle_) {
+      return Error::kOpenFailed;
+    }
     return MapView();
   }
 
@@ -138,7 +153,9 @@ class SharedMemory {
     shm_unlink(name_);
 
     fd_ = shm_open(name_, O_CREAT | O_RDWR, 0666);
-    if (fd_ == -1) { return Error::kCreationFailed; }
+    if (fd_ == -1) {
+      return Error::kCreationFailed;
+    }
 
     if (ftruncate(fd_, static_cast<off_t>(size_)) == -1) {
       ::close(fd_);
@@ -151,7 +168,9 @@ class SharedMemory {
 
   Error PosixOpen() noexcept {
     fd_ = shm_open(name_, O_RDWR, 0666);
-    if (fd_ == -1) { return Error::kOpenFailed; }
+    if (fd_ == -1) {
+      return Error::kOpenFailed;
+    }
 
     // Auto-detect size if caller passed 0
     if (size_ == 0) {
@@ -165,11 +184,14 @@ class SharedMemory {
 
   Error MapRegion() noexcept {
     // Both sides need PROT_WRITE (consumer writes tail index)
-    data_ = mmap(nullptr, size_, PROT_READ | PROT_WRITE, MAP_SHARED, fd_, 0);
+    data_ = mmap(nullptr, size_, PROT_READ | PROT_WRITE,
+                 MAP_SHARED, fd_, 0);
     if (data_ == MAP_FAILED) {
       ::close(fd_);
       fd_ = -1;
-      if (create_) { shm_unlink(name_); }
+      if (create_) {
+        shm_unlink(name_);
+      }
       data_ = nullptr;
       return Error::kMappingFailed;
     }
@@ -178,15 +200,25 @@ class SharedMemory {
 #endif
 
   void Close() noexcept {
-    if (!data_) { return; }
+    if (!data_) {
+      return;
+    }
 
 #if defined(_WIN32)
     UnmapViewOfFile(data_);
-    if (handle_) { CloseHandle(handle_); handle_ = nullptr; }
+    if (handle_) {
+      CloseHandle(handle_);
+      handle_ = nullptr;
+    }
 #else
     munmap(data_, size_);
-    if (fd_ != -1) { ::close(fd_); fd_ = -1; }
-    if (!persist_ && create_) { Destroy(); }
+    if (fd_ != -1) {
+      ::close(fd_);
+      fd_ = -1;
+    }
+    if (!persist_ && create_) {
+      Destroy();
+    }
 #endif
     data_ = nullptr;
   }
@@ -220,7 +252,7 @@ class SharedMemory {
   Error error_ = Error::kOk;
   bool persist_ = true;
   bool create_ = false;
-  char name_[64] = {};  // 128 -> 64 (POSIX shm names are typically < 32 chars)
+  char name_[64] = {};  // 64 bytes (POSIX shm names typically < 32 chars)
 };
 
 }  // namespace shm
