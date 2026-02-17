@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Cross-language test: read messages written by C++ producer."""
+
 import sys
+
 sys.path.insert(0, ".")
 
 from shm_channel import ShmConsumer

@@ -44,10 +44,12 @@ class ShmProducer:
             pass
 
         self._shm: Optional[SharedMemory] = SharedMemory(
-            name=name, create=True, size=total_size)
+            name=name, create=True, size=total_size
+        )
         self._buf_view = self._shm.buf
         self._ring: Optional[ByteRingBuffer] = ByteRingBuffer(
-            self._buf_view, is_producer=True)
+            self._buf_view, is_producer=True
+        )
 
     def write(self, data: bytes) -> bool:
         """Write a message to shared memory."""
@@ -108,12 +110,12 @@ class ShmConsumer:
 
     def __init__(self, name: str, size: int = 0) -> None:
         self._name = name
-        self._shm: Optional[SharedMemory] = SharedMemory(
-            name=name, create=False)
+        self._shm: Optional[SharedMemory] = SharedMemory(name=name, create=False)
         actual_size = size if size > 0 else self._shm.size
         self._buf_view = self._shm.buf[:actual_size]
         self._ring: Optional[ByteRingBuffer] = ByteRingBuffer(
-            self._buf_view, is_producer=False)
+            self._buf_view, is_producer=False
+        )
 
     def read(self) -> Optional[bytes]:
         """Read one message from shared memory."""

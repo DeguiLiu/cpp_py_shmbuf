@@ -34,6 +34,7 @@ def main():
 
     try:
         import cv2
+
         has_cv2 = True
     except ImportError:
         has_cv2 = False
@@ -53,11 +54,11 @@ def main():
         if has_cv2:
             img = np.frombuffer(data, dtype=np.uint8).reshape((HEIGHT, WIDTH, CHANNELS))
             cv2.imshow("SHM Consumer", img)
-            if (cv2.waitKey(1) & 0xFF) == ord('q'):
+            if (cv2.waitKey(1) & 0xFF) == ord("q"):
                 break
         else:
             # No OpenCV: just print stats
-            frame_idx = int.from_bytes(data[:4], byteorder='little')
+            frame_idx = int.from_bytes(data[:4], byteorder="little")
             if frame_count % 100 == 0:
                 elapsed = time.monotonic() - t0
                 fps = frame_count / elapsed if elapsed > 0 else 0

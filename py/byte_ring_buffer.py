@@ -45,10 +45,10 @@ class ByteRingBuffer:
 
         if is_producer:
             cap = self._round_down_pow2(len(buf) - HEADER_SIZE)
-            _U32.pack_into(self._buf, 0, 0)       # head = 0
-            _U32.pack_into(self._buf, 4, 0)       # tail = 0
-            _U32.pack_into(self._buf, 8, cap)     # capacity
-            _U32.pack_into(self._buf, 12, 0)      # reserved
+            _U32.pack_into(self._buf, 0, 0)  # head = 0
+            _U32.pack_into(self._buf, 4, 0)  # tail = 0
+            _U32.pack_into(self._buf, 8, cap)  # capacity
+            _U32.pack_into(self._buf, 12, 0)  # reserved
         else:
             cap = _U32.unpack_from(self._buf, 8)[0]
 
@@ -127,10 +127,10 @@ class ByteRingBuffer:
         first = self._capacity - offset
 
         if first >= length:
-            self._buf[base:base + length] = data
+            self._buf[base : base + length] = data
         else:
-            self._buf[base:base + first] = data[:first]
-            self._buf[HEADER_SIZE:HEADER_SIZE + length - first] = data[first:]
+            self._buf[base : base + first] = data[:first]
+            self._buf[HEADER_SIZE : HEADER_SIZE + length - first] = data[first:]
 
     def _read_raw(self, pos: int, length: int) -> bytes:
         offset = pos & self._mask
@@ -138,9 +138,10 @@ class ByteRingBuffer:
         first = self._capacity - offset
 
         if first >= length:
-            return bytes(self._buf[base:base + length])
-        return (bytes(self._buf[base:base + first])
-                + bytes(self._buf[HEADER_SIZE:HEADER_SIZE + length - first]))
+            return bytes(self._buf[base : base + length])
+        return bytes(self._buf[base : base + first]) + bytes(
+            self._buf[HEADER_SIZE : HEADER_SIZE + length - first]
+        )
 
     @staticmethod
     def _round_down_pow2(v: int) -> int:
