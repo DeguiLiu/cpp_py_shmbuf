@@ -1,4 +1,4 @@
-# cpp_py_shmbuf v2 设计文档
+# cpp_py_shmbuf 设计文档
 
 版本: 2.0 | 日期: 2026-02-17
 
@@ -325,8 +325,8 @@ def read(self) -> Optional[bytes]:
 
 ## 7. 对比现有方案
 
-| 维度 | v1 (现有) | v2 (新设计) |
-|------|-----------|-------------|
+| 维度 | 旧版本 | 当前版本 |
+|------|--------|----------|
 | 共享内存 | Boost.Interprocess | POSIX shm_open / Win32 CreateFileMapping |
 | 依赖 | Boost, OpenCV | 零依赖 (header-only) |
 | 内存序 | `__sync_synchronize` (全屏障) | `atomic_thread_fence(acquire/release)` |

@@ -25,13 +25,16 @@ ShmReader → frame_received → FrameDecoder → frame_decoded → FrameDisplay
 ## 事件流
 
 ```mermaid
-graph LR
+graph TB
     A[ShmReader] -->|frame.received| B[FrameDecoder]
     B -->|frame.decoded| C[FrameDisplay]
     B -->|frame.decoded| D[FPSCounter]
     C -->|frame.displayed| D
-    B -.error.occurred.-> E[ErrorLogger]
+    B -->|error.occurred| E[ErrorLogger]
     D -->|fps.updated| F[Console]
+
+    style E fill:#ffcccc
+    style F fill:#ccffcc
 ```
 
 ## 优势
