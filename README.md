@@ -1,5 +1,9 @@
 # cpp_py_shmbuf
 
+[![CI](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/ci.yml/badge.svg)](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/ci.yml)
+[![Code Coverage](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/coverage.yml/badge.svg)](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/coverage.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Cross-language shared memory IPC: C++ and Python communicate via a lock-free SPSC ring buffer over POSIX/Win32 shared memory. Zero-copy, zero-dependency, header-only.
 
 ## Architecture
