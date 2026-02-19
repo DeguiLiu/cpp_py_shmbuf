@@ -6,6 +6,7 @@ Usage:
     python test_blinker_consumer.py
 """
 
+import os
 import sys
 import unittest
 from unittest.mock import MagicMock, patch
@@ -13,7 +14,7 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 from blinker import signal
 
-sys.path.insert(0, "py")
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "py"))
 
 # Import signals and classes
 from consumer_demo_blinker import (
@@ -124,9 +125,8 @@ class TestBlinkerEventFlow(unittest.TestCase):
         fake_data = b"\x00" * FRAME_SIZE
         frame_received.send(None, data=fake_data)
 
-        # 验证两个解码器都收到信号（因为都连接到同一个信号）
-        # 但实际上只有一个 frame_decoded 信号被发送
-        self.assertEqual(decoded_count[0], 1)
+        # 两个解码器都连接到 frame_received，各自触发一次 frame_decoded
+        self.assertEqual(decoded_count[0], 2)
 
 
 class TestComponentIntegration(unittest.TestCase):
