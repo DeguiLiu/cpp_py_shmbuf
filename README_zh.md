@@ -1,5 +1,11 @@
 # cpp_py_shmbuf
 
+[![CI](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/ci.yml/badge.svg)](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/ci.yml)
+[![Code Coverage](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/coverage.yml/badge.svg)](https://github.com/DeguiLiu/cpp_py_shmbuf/actions/workflows/coverage.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+[English](README.md) | **中文**
+
 跨语言共享内存 IPC: C++ 和 Python 通过无锁 SPSC 环形缓冲区在 POSIX/Win32 共享内存上通信。零拷贝、零依赖、header-only。
 
 ## 架构
